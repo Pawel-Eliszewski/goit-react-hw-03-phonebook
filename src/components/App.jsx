@@ -20,13 +20,8 @@ export class App extends Component {
     }
   }
 
-  componentDidUpdate(prevState) {
-    prevState = JSON.parse(localStorage.getItem('phonebook'));
-    if (this.state.contacts.length !== prevState.length) {
-      this.setState({
-        contacts: JSON.parse(localStorage.getItem('phonebook')),
-      });
-    }
+  componentDidUpdate() {
+    localStorage.setItem('phonebook', JSON.stringify(this.state.contacts));
   }
 
   handleFormSubmit = input => {
@@ -38,19 +33,16 @@ export class App extends Component {
         name: input.name,
         number: input.number,
       };
-      const list = JSON.parse(localStorage.getItem('phonebook'));
-      list.push(newContact);
-      localStorage.setItem('phonebook', JSON.stringify(list));
-      this.setState({
-        contacts: JSON.parse(localStorage.getItem('phonebook')),
-      });
+      this.setState(prevState => ({
+        contacts: [...prevState.contacts, newContact],
+      }));
     } else {
       alert(`${input.name} is already in contacts.`);
     }
   };
 
   setFilterToState = value => {
-    this.setState({ ...this.state, filter: `${value}` });
+    this.setState({ filter: `${value}` });
   };
 
   filteredContacts = contacts => {
@@ -60,13 +52,8 @@ export class App extends Component {
   };
 
   handleElementDelete = id => {
-    const list = JSON.parse(localStorage.getItem('phonebook'));
-    localStorage.setItem(
-      'phonebook',
-      JSON.stringify(list.filter(contact => contact.id !== id))
-    );
     this.setState({
-      contacts: JSON.parse(localStorage.getItem('phonebook')),
+      contacts: this.state.contacts.filter(contact => contact.id !== id),
     });
   };
 
